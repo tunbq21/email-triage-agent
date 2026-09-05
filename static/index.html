@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Triage Agent</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Header Area -->
+        <aside class="sidebar">
+            <div class="branding">
+                <div class="logo-icon"></div>
+                <h1>Signal Control</h1>
+            </div>
+            
+            <div class="triage-controls">
+                <button id="runTriageBtn" class="btn-primary">
+                    <span class="btn-text">Run Triage Sequence</span>
+                    <span class="btn-loader" style="display: none;"></span>
+                </button>
+            </div>
+            
+            <div class="status-panel">
+                <h3>System Status</h3>
+                <p id="statusText">Awaiting command. No signals processed yet.</p>
+            </div>
+        </aside>
+
+        <!-- Main Triage Feed -->
+        <main class="triage-feed">
+            <header class="feed-header">
+                <h2>Incoming Signals</h2>
+                <div class="feed-stats">
+                    <span id="processedCount">0</span> processed
+                </div>
+            </header>
+            
+            <div id="emailList" class="email-list">
+                <!-- Empty state -->
+                <div class="empty-state">
+                    <p>The feed is empty. Run triage to analyze new emails.</p>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Details View -->
+        <section class="focus-view" id="focusView">
+            <div class="focus-empty">
+                <p>Select a signal to view details</p>
+            </div>
+            
+            <div class="focus-content" style="display: none;">
+                <div class="focus-header">
+                    <div class="tags" id="detailTags">
+                        <!-- Tags injected here -->
+                    </div>
+                    <h2 id="detailSubject">Email Subject</h2>
+                    <div class="meta">
+                        <span id="detailSender">Sender</span>
+                        <span id="detailDate">Date</span>
+                    </div>
+                </div>
+                
+                <div class="focus-body">
+                    <h3>Content</h3>
+                    <p id="detailBody">Email body...</p>
+                </div>
+                
+                <div class="focus-action">
+                    <h3>AI Action Log</h3>
+                    <div class="action-card" id="detailActionCard">
+                        <p id="detailActionText">Action taken</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="/app.js"></script>
+</body>
+</html>

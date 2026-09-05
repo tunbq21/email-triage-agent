@@ -19,7 +19,7 @@ def archive_node(state: TriageState) -> dict:
     Node xử lý thư rác, quảng cáo, hoặc thư không quan trọng.
     """
     email = state["current_email"]
-    print(f"[{email.id}] 🗑️ Chuyển vào Archive/Thùng rác.")
+    print(f"[{email.id}] Chuyen vao Archive/Thung rac.")
     return {"action_taken": "archived"}
 
 
@@ -29,7 +29,7 @@ def human_review_node(state: TriageState) -> dict:
     Chuyển email vào danh sách chờ con người xem xét và trả lời.
     """
     email = state["current_email"]
-    print(f"[{email.id}] 👤 Đã đưa vào hàng chờ Human Review.")
+    print(f"[{email.id}] Da dua vao hang cho Human Review.")
     return {"action_taken": "pending_human_review"}
 
 
@@ -41,7 +41,7 @@ def auto_reply_node(state: TriageState) -> dict:
     email = state["current_email"]
     classification = state["classification"]
 
-    print(f"[{email.id}] 🤖 Đang soạn thư phản hồi khẩn cấp (Priority: {classification.priority})...")
+    print(f"[{email.id}] Dang soan thu phan hoi khan cap (Priority: {classification.priority})...")
 
     draft = generate_auto_reply({
         "sender": email.sender,
