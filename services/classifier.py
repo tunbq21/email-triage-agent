@@ -1,14 +1,8 @@
 from langchain_core.prompts import PromptTemplate
-from langchain_google_genai import ChatGoogleGenerativeAI
 from schemas.email import EmailInput
 from schemas.classification import ClassificationResult
-import os
-from dotenv import load_dotenv
+from services.llm import get_llm
 
-# Load environment variables just in case, though it's usually done in main
-load_dotenv()
-
-# Define the prompt template
 classification_template = """
 Bạn là một trợ lý AI quản lý hộp thư đến xuất sắc. Nhiệm vụ của bạn là phân loại email sau đây:
 
@@ -27,25 +21,25 @@ Hãy phân tích email và trả về kết quả phân loại dựa trên các 
 - requires_action: True nếu email yêu cầu người dùng phải làm gì đó (trả lời, kiểm tra, xác nhận), False nếu chỉ là email thông báo/FYI.
 """
 
-prompt = PromptTemplate(
+_prompt = PromptTemplate(
     template=classification_template,
     input_variables=["sender", "subject", "date", "body"]
 )
 
-def get_classifier_chain():
-    """Khởi tạo và trả về LCEL chain."""
-    model_name = os.getenv("GEMINI_MODEL_NAME", "gemini-3.6-flash")
-    llm = ChatGoogleGenerativeAI(model=model_name, temperature=0)
-    structured_llm = llm.with_structured_output(ClassificationResult)
-    return prompt | structured_llm
 
-def classify_email_chain(email: EmailInput) -> ClassificationResult:
-    """Gọi chain để phân loại email."""
+def get_classifier_chain():
+    """Khởi tạo và trả về LCEL chain phân loại email."""
+    llm = get_llm(temperature=0)
+    structured_llm = llm.with_structured_output(ClassificationResult)
+    return _prompt | structured_llm
+
+
+def classify_email(email: EmailInput) -> ClassificationResult:
+    """Phân loại một email và trả về kết quả có cấu trúc."""
     chain = get_classifier_chain()
-    result = chain.invoke({
+    return chain.invoke({
         "sender": email.sender,
         "subject": email.subject,
         "date": email.date,
         "body": email.body
     })
-    return result

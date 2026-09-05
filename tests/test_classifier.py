@@ -2,8 +2,8 @@ import pytest
 import os
 from dotenv import load_dotenv
 
-from core.mock_data import get_mock_emails
-from chains.classifier import classify_email_chain
+from data.mock_emails import get_mock_emails
+from services.classifier import classify_email
 
 # Đảm bảo load biến môi trường để lấy GOOGLE_API_KEY
 load_dotenv()
@@ -22,7 +22,7 @@ pytestmark = pytest.mark.skipif(
 def test_urgent_system_error_email(mock_emails):
     """Test case: Email khẩn cấp báo sập hệ thống (P0)"""
     email = mock_emails["mock_1"]
-    result = classify_email_chain(email)
+    result = classify_email(email)
     
     assert result.category == "work", "Phải là email công việc"
     assert result.priority in ["P0", "P1"], "Lỗi sập hệ thống phải là độ ưu tiên cao nhất"
@@ -32,7 +32,7 @@ def test_urgent_system_error_email(mock_emails):
 def test_newsletter_email(mock_emails):
     """Test case: Email bản tin quảng cáo, không quan trọng (P3)"""
     email = mock_emails["mock_2"]
-    result = classify_email_chain(email)
+    result = classify_email(email)
     
     assert result.category in ["newsletter", "promotion"], "Phải là bản tin hoặc quảng cáo"
     assert result.priority == "P3", "Bản tin thì priority thấp nhất"
@@ -41,7 +41,7 @@ def test_newsletter_email(mock_emails):
 def test_internal_hr_reminder(mock_emails):
     """Test case: Nhắc nhở từ HR (P2, cần điền form)"""
     email = mock_emails["mock_3"]
-    result = classify_email_chain(email)
+    result = classify_email(email)
     
     assert result.category == "work", "Thông báo từ HR là công việc"
     assert result.priority in ["P1", "P2"], "Nhắc nhở điền form có thể là P1 (nếu hạn gấp) hoặc P2"
@@ -50,7 +50,7 @@ def test_internal_hr_reminder(mock_emails):
 def test_spam_scam_email(mock_emails):
     """Test case: Email lừa đảo trúng thưởng (spam)"""
     email = mock_emails["mock_4"]
-    result = classify_email_chain(email)
+    result = classify_email(email)
     
     assert result.category == "spam", "Email trúng thưởng đáng ngờ phải bị đánh dấu spam"
     assert result.priority == "P3", "Spam không có độ ưu tiên"

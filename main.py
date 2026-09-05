@@ -1,59 +1,39 @@
-from dotenv import load_dotenv
+"""
+Email Triage Agent — Entry Point
+
+Chạy lệnh: uv run python main.py
+"""
 import os
-from langgraph.graph import StateGraph, START, END
+from dotenv import load_dotenv
+from graph.builder import build_graph
+from data.mock_emails import get_mock_emails
 
-# Import schemas and nodes
-from schemas.state import TriageState
-from agents.classifier_node import classifier_node
-from core.mock_data import get_mock_emails
-
-def build_graph():
-    """Xây dựng LangGraph cho Email Triage Agent."""
-    # Khởi tạo đồ thị với state schema
-    workflow = StateGraph(TriageState)
-    
-    # Thêm các node
-    workflow.add_node("classify", classifier_node)
-    
-    # Định nghĩa luồng cơ bản: START -> classify -> END
-    workflow.add_edge(START, "classify")
-    workflow.add_edge("classify", END)
-    
-    # Compile graph
-    app = workflow.compile()
-    return app
 
 def main():
-    # Load biến môi trường
     load_dotenv()
-    
-    # Kiểm tra API Key
+
     if not os.getenv("GOOGLE_API_KEY"):
-        print("Lỗi: Không tìm thấy GOOGLE_API_KEY trong biến môi trường (.env)")
+        print("Lỗi: Không tìm thấy GOOGLE_API_KEY trong file .env")
         return
-        
-    print("Khởi tạo Email Triage Agent (Phase 1)...")
+
+    print("🚀 Khởi tạo Email Triage Agent...")
     app = build_graph()
-    
-    # Lấy mock data
+
     emails = get_mock_emails()
-    
-    # Chạy thử với từng email
+    print(f"📬 Tìm thấy {len(emails)} email cần xử lý.\n")
+
     for email in emails:
-        # Khởi tạo state ban đầu
-        initial_state = {"current_email": email}
-        
-        # Chạy graph
-        result = app.invoke(initial_state)
-        
-        # In kết quả
+        result = app.invoke({"current_email": email})
+
         classification = result["classification"]
-        print(f"=> Category: {classification.category.upper()}")
-        print(f"=> Priority: {classification.priority}")
-        print(f"=> Confidence: {classification.confidence}")
-        print(f"=> Requires Action: {classification.requires_action}")
-        print(f"=> Reasoning: {classification.reasoning}")
-        print("-" * 50)
+        print(f"  ├─ Category   : {classification.category.upper()}")
+        print(f"  ├─ Priority   : {classification.priority}")
+        print(f"  ├─ Confidence : {classification.confidence:.0%}")
+        print(f"  ├─ Action     : {result.get('action_taken', '-')}")
+        if result.get("draft_reply"):
+            print(f"\n[DRAFT REPLY]\n{result['draft_reply']}\n")
+        print("  " + "─" * 48)
+
 
 if __name__ == "__main__":
     main()

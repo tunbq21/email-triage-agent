@@ -1,7 +1,8 @@
 from schemas.email import EmailInput
 
+
 def get_mock_emails() -> list[EmailInput]:
-    """Trả về danh sách email mẫu để kiểm tra."""
+    """Trả về danh sách email mẫu để kiểm tra (dùng khi chưa có Gmail API)."""
     return [
         EmailInput(
             id="mock_1",
