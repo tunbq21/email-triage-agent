@@ -22,7 +22,7 @@ def main():
     try:
         emails = fetch_unread_emails(max_results=3)
     except FileNotFoundError as e:
-        print(f"\n❌ Lỗi: {e}")
+        print(f"\n Lỗi: {e}")
         return
 
     print(f"Tim thay {len(emails)} email chua doc.\n")
